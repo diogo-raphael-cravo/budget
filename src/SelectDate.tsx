@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Select } from 'antd';
+import { useAppSelector, useAppDispatch } from './Hooks';
+import { selectYear, selectMonth, setMonth, setYear } from './slices/selectDateSlice';
 import entries, { BudgetEntry } from './data';
 
 function getAllYears(data: BudgetEntry[]): number[] {
@@ -41,7 +43,7 @@ function getAllDaysPerMonthPerYear(data: BudgetEntry[], year: number, month: num
     return days;
 }
 
-function MonthValueToLabel(value: number): string {
+export function MonthValueToLabel(value: number): string {
     switch (value) {
         case 1: return 'Janeiro';
         case 2: return 'Fevereiro';
@@ -60,22 +62,29 @@ function MonthValueToLabel(value: number): string {
 }
 
 function SelectDate() {
-    const yearOptions = getAllYears(entries);
+    const dispatch = useAppDispatch();
 
-    const [year, selectYear] = useState(yearOptions[0]);
+    const year = useAppSelector(selectYear);
+    const yearOptions = getAllYears(entries);
+    if (undefined === yearOptions.find(option => option === year)) {
+        dispatch(setYear(yearOptions[0]));
+    }
     const handleChangeYear = (value: number) => {
-        selectYear(value);
+        dispatch(setYear(value));
     };
 
+    const month = useAppSelector(selectMonth);
     const monthOptions = getAllMonthsPerYear(entries, year);
-    const [month, selectMonth] = useState(monthOptions[0]);
+    if (undefined === monthOptions.find(option => option === month)) {
+        dispatch(setMonth(monthOptions[0]));
+    }
     const handleChangeMonth = (value: number) => {
-        selectMonth(value);
+        dispatch(setMonth(value));
     };
     
     return <div>
          <Select
-            defaultValue={yearOptions[0]}
+            value={year}
             style={{ width: 120 }}
             onChange={handleChangeYear}
             options={yearOptions.map(option => ({
@@ -84,7 +93,7 @@ function SelectDate() {
             }))}
         />
         <Select
-            defaultValue={monthOptions[0]}
+            value={month}
             style={{ width: 120 }}
             onChange={handleChangeMonth}
             options={monthOptions.map(option => ({
