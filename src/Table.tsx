@@ -74,10 +74,10 @@ function makeColumns(data: BudgetEntry[]): ColumnsType<BudgetEntry> {
 function Table() {
     const year = useAppSelector(selectYear);
     const month = useAppSelector(selectMonth);
-    let filteredEntries = entries.filter(entry => entry.year === year && entry.month === month);
+    let filteredEntries = entries.filter(entry => entry.year === year && (entry.month === month || 0 === month));
     return <div>
         <SelectDate/>
-        <AntTable columns={makeColumns(filteredEntries)} dataSource={filteredEntries} />
+        <AntTable columns={makeColumns(filteredEntries)} dataSource={filteredEntries} rowKey='value' />
     </div>;
 }
 

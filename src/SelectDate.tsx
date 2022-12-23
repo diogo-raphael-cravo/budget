@@ -15,7 +15,7 @@ function getAllYears(data: BudgetEntry[]): number[] {
 }
 
 function getAllMonthsPerYear(data: BudgetEntry[], year: number): number[] {
-    const months: number[] = [];
+    const months: number[] = [0];
     data.forEach(entry => {
         if (entry.year !== year) {
             return;
@@ -45,6 +45,7 @@ function getAllDaysPerMonthPerYear(data: BudgetEntry[], year: number, month: num
 
 export function MonthValueToLabel(value: number): string {
     switch (value) {
+        case 0: return 'Todos';
         case 1: return 'Janeiro';
         case 2: return 'Fevereiro';
         case 3: return 'Março';
