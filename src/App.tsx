@@ -35,7 +35,7 @@ const items: MenuItem[] = [
 
 function App() {
   const [collapsed, setCollapsed] = useState(false);
-  const [selectedKeys, setSelectedKeys] = useState(['graphs']);
+  const [selectedKeys, setSelectedKeys] = useState(['table']);
   const {
     token: { colorBgContainer },
   } = theme.useToken();
