@@ -3,11 +3,13 @@ import './App.css';
 import {
   FileOutlined,
   PieChartOutlined,
+  PlusOutlined,
 } from '@ant-design/icons';
 import type { MenuProps } from 'antd';
 import { Layout, Menu, theme } from 'antd';
 import Charts from './Charts';
 import Table from './Table';
+import Statistics from './Statistics';
 
 const { Header, Content, Footer, Sider } = Layout;
 
@@ -30,12 +32,13 @@ function getItem(
 const items: MenuItem[] = [
   getItem('Gráficos', 'graphs', <PieChartOutlined />),
   getItem('Tabelas', 'table', <FileOutlined />),
+  getItem('Estatísticas', 'stats', <PlusOutlined />),
 ];
 
 
 function App() {
   const [collapsed, setCollapsed] = useState(false);
-  const [selectedKeys, setSelectedKeys] = useState(['table']);
+  const [selectedKeys, setSelectedKeys] = useState(['stats']);
   const {
     token: { colorBgContainer },
   } = theme.useToken();
@@ -44,7 +47,15 @@ function App() {
     setSelectedKeys([info.key]);
   };
 
-  const selectedPage = 'graphs' === selectedKeys[0] ? <Charts/> : <Table/>;
+  let selectedPage;
+  switch (selectedKeys[0]) {
+    case 'graphs': selectedPage = <Charts/>;
+      break;
+    case 'table' : selectedPage = <Table/>;
+      break;
+    case 'stats': selectedPage = <Statistics/>;
+      break;
+  }
 
   return (
     <Layout style={{ minHeight: '100vh' }}>
