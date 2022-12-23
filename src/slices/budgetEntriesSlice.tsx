@@ -27,6 +27,11 @@ export const budgeEntriesSlice = createSlice({
   reducers: {},
 })
 
+export function filterEntries(entries: BudgetEntry[], year: number, month: number): BudgetEntry[] {
+  return entries.filter(entry => (entry.year === year || 0 === year)
+    && (entry.month === month || 0 === month));
+}
+
 // Other code such as selectors can use the imported `RootState` type
 export const selectEntries = (state: RootState) => state.budgetEntriesSlice.entries;
 

@@ -2,7 +2,7 @@ import React from 'react';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend, ChartData } from 'chart.js';
 import { Pie } from 'react-chartjs-2';
 import SelectDate from './SelectDate';
-import { selectEntries, BudgetEntry } from './slices/budgetEntriesSlice';
+import { selectEntries, BudgetEntry, filterEntries } from './slices/budgetEntriesSlice';
 import { colorToString, randomColor } from './helpers';
 import { useAppSelector } from './Hooks';
 import { selectYear, selectMonth } from './slices/selectDateSlice';
@@ -68,7 +68,7 @@ function Charts() {
     const year = useAppSelector(selectYear);
     const month = useAppSelector(selectMonth);
     const entries = useAppSelector(selectEntries);
-    let filteredEntries = entries.filter(entry => entry.year === year && (entry.month === month || 0 === month));
+    let filteredEntries = filterEntries(entries, year, month);
     return <div style={{width:400, height: 400}}>
         <SelectDate/>
         <Pie data={makeChart(filteredEntries)} />

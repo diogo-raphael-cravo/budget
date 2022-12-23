@@ -5,7 +5,7 @@ import { selectYear, selectMonth, setMonth, setYear } from './slices/selectDateS
 import { selectEntries, BudgetEntry } from './slices/budgetEntriesSlice';
 
 function getAllYears(data: BudgetEntry[]): number[] {
-    const years: number[] = [];
+    const years: number[] = [0];
     data.forEach(entry => {
         if (undefined === years.find(year => entry.year === year)) {
             years.push(entry.year);
@@ -43,7 +43,14 @@ function getAllDaysPerMonthPerYear(data: BudgetEntry[], year: number, month: num
     return days;
 }
 
-export function MonthValueToLabel(value: number): string {
+export function yearValueToLabel(value: number): string {
+    switch (value) {
+        case 0: return 'Todos';
+        default: return `${value}`;
+    }
+}
+
+export function monthValueToLabel(value: number): string {
     switch (value) {
         case 0: return 'Todos';
         case 1: return 'Janeiro';
@@ -92,7 +99,7 @@ function SelectDate() {
             onChange={handleChangeYear}
             options={yearOptions.map(option => ({
                 value: option,
-                label: option,
+                label: yearValueToLabel(option),
             }))}
         />
         <Select
@@ -101,7 +108,7 @@ function SelectDate() {
             onChange={handleChangeMonth}
             options={monthOptions.map(option => ({
                 value: option,
-                label: MonthValueToLabel(option),
+                label: monthValueToLabel(option),
             }))}
         />
     </div>;
