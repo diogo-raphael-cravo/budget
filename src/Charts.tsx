@@ -62,12 +62,8 @@ function makeChart(data: BudgetEntry[]): ChartData<"pie", number[], string> {
 }
 
 function Charts() {
-    const allEntries: BudgetEntry[] = [];
-    entries.forEach(entry => {
-        allEntries.push(...entry.entries);
-    });
     return <div style={{width:400, height: 400}}>
-        <Pie data={makeChart(allEntries)} />
+        <Pie data={makeChart(entries)} />
     </div>;
 }
 

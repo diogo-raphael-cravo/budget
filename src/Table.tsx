@@ -1,6 +1,6 @@
 import React from 'react';
 import { Table as AntTable } from 'antd';
-import type { ColumnsType, TableProps } from 'antd/es/table';
+import type { ColumnsType } from 'antd/es/table';
 import entries, { BudgetEntry } from './data';
 
 function getAccounts(data: BudgetEntry[]): string[] {
@@ -37,6 +37,16 @@ function makeColumns(data: BudgetEntry[]): ColumnsType<BudgetEntry> {
         sorter: (a, b) => a.day - b.day,
         sortDirections: ['descend', 'ascend'],
     }, {
+        title: 'Mês',
+        dataIndex: 'month',
+        sorter: (a, b) => a.month - b.month,
+        sortDirections: ['descend', 'ascend'],
+    }, {
+        title: 'Ano',
+        dataIndex: 'year',
+        sorter: (a, b) => a.year - b.year,
+        sortDirections: ['descend', 'ascend'],
+    }, {
         title: 'Valor (R$)',
         dataIndex: 'value',
         sorter: (a, b) => a.value - b.value,
@@ -59,8 +69,7 @@ function makeColumns(data: BudgetEntry[]): ColumnsType<BudgetEntry> {
 
 function Table() {
     return <div>
-        Janeiro de 2022
-        <AntTable columns={makeColumns(entries[0].entries)} dataSource={entries[0].entries} />
+        <AntTable columns={makeColumns(entries)} dataSource={entries} />
     </div>;
 }
 
