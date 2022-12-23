@@ -2,9 +2,9 @@ import React from 'react';
 import { Table as AntTable } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import SelectDate, { MonthValueToLabel } from './SelectDate';
-import entries, { BudgetEntry } from './data';
 import { useAppSelector } from './Hooks';
 import { selectYear, selectMonth } from './slices/selectDateSlice';
+import { selectEntries, BudgetEntry } from './slices/budgetEntriesSlice';
 
 function getAccounts(data: BudgetEntry[]): string[] {
     const accounts: string[] = [];
@@ -74,6 +74,7 @@ function makeColumns(data: BudgetEntry[]): ColumnsType<BudgetEntry> {
 function Table() {
     const year = useAppSelector(selectYear);
     const month = useAppSelector(selectMonth);
+    const entries = useAppSelector(selectEntries);
     let filteredEntries = entries.filter(entry => entry.year === year && (entry.month === month || 0 === month));
     return <div>
         <SelectDate/>

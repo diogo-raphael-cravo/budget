@@ -2,7 +2,7 @@ import React from 'react';
 import { Select } from 'antd';
 import { useAppSelector, useAppDispatch } from './Hooks';
 import { selectYear, selectMonth, setMonth, setYear } from './slices/selectDateSlice';
-import entries, { BudgetEntry } from './data';
+import { selectEntries, BudgetEntry } from './slices/budgetEntriesSlice';
 
 function getAllYears(data: BudgetEntry[]): number[] {
     const years: number[] = [];
@@ -64,6 +64,8 @@ export function MonthValueToLabel(value: number): string {
 
 function SelectDate() {
     const dispatch = useAppDispatch();
+
+    const entries = useAppSelector(selectEntries);
 
     const year = useAppSelector(selectYear);
     const yearOptions = getAllYears(entries);
