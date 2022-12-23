@@ -1,6 +1,7 @@
 import React from 'react';
 import { Table as AntTable } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
+import SelectDate from './SelectDate';
 import entries, { BudgetEntry } from './data';
 
 function getAccounts(data: BudgetEntry[]): string[] {
@@ -69,6 +70,7 @@ function makeColumns(data: BudgetEntry[]): ColumnsType<BudgetEntry> {
 
 function Table() {
     return <div>
+        <SelectDate/>
         <AntTable columns={makeColumns(entries)} dataSource={entries} />
     </div>;
 }

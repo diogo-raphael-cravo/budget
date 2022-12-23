@@ -1,6 +1,7 @@
 import React from 'react';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend, ChartData } from 'chart.js';
 import { Pie } from 'react-chartjs-2';
+import SelectDate from './SelectDate';
 import entries, { BudgetEntry } from './data';
 import { colorToString, randomColor } from './helpers';
 
@@ -63,6 +64,7 @@ function makeChart(data: BudgetEntry[]): ChartData<"pie", number[], string> {
 
 function Charts() {
     return <div style={{width:400, height: 400}}>
+        <SelectDate/>
         <Pie data={makeChart(entries)} />
     </div>;
 }

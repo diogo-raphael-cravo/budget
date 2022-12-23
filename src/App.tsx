@@ -29,7 +29,7 @@ function getItem(
 
 const items: MenuItem[] = [
   getItem('Gráficos', 'graphs', <PieChartOutlined />),
-  getItem('Tabela', 'table', <FileOutlined />),
+  getItem('Tabelas', 'table', <FileOutlined />),
 ];
 
 
