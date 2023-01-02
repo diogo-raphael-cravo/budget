@@ -1,12 +1,14 @@
 import { configureStore } from '@reduxjs/toolkit';
 
 import selectDateSlice from './slices/selectDateSlice';
-import budgetEntriesSlice from './slices/budgetEntriesSlice';
+import expenseEntriesSlice from './slices/expenseEntriesSlice';
+import incomeEntriesSlice from './slices/incomeEntriesSlice';
 
 export const store = configureStore({
   reducer: {
     selectDateSlice,
-    budgetEntriesSlice,
+    expenseEntriesSlice,
+    incomeEntriesSlice,
   }
 });
 

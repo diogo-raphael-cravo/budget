@@ -2,9 +2,9 @@ import React from 'react';
 import { Select } from 'antd';
 import { useAppSelector, useAppDispatch } from './Hooks';
 import { selectYear, selectMonth, setMonth, setYear } from './slices/selectDateSlice';
-import { selectEntries, BudgetEntry } from './slices/budgetEntriesSlice';
+import { selectExpenseEntries, ExpenseEntry } from './slices/expenseEntriesSlice';
 
-function getAllYears(data: BudgetEntry[]): number[] {
+function getAllYears(data: ExpenseEntry[]): number[] {
     const years: number[] = [0];
     data.forEach(entry => {
         if (undefined === years.find(year => entry.year === year)) {
@@ -14,7 +14,7 @@ function getAllYears(data: BudgetEntry[]): number[] {
     return years;
 }
 
-function getAllMonthsPerYear(data: BudgetEntry[], year: number): number[] {
+function getAllMonthsPerYear(data: ExpenseEntry[], year: number): number[] {
     const months: number[] = [0];
     data.forEach(entry => {
         if (entry.year !== year) {
@@ -27,7 +27,7 @@ function getAllMonthsPerYear(data: BudgetEntry[], year: number): number[] {
     return months;
 }
 
-function getAllDaysPerMonthPerYear(data: BudgetEntry[], year: number, month: number): number[] {
+function getAllDaysPerMonthPerYear(data: ExpenseEntry[], year: number, month: number): number[] {
     const days: number[] = [];
     data.forEach(entry => {
         if (entry.year !== year) {
@@ -72,7 +72,7 @@ export function monthValueToLabel(value: number): string {
 function SelectDate() {
     const dispatch = useAppDispatch();
 
-    const entries = useAppSelector(selectEntries);
+    const entries = useAppSelector(selectExpenseEntries);
 
     const year = useAppSelector(selectYear);
     const yearOptions = getAllYears(entries);
@@ -93,6 +93,7 @@ function SelectDate() {
     };
     
     return <div>
+        <label style={{ marginRight: 10 }} >Ano</label>
          <Select
             value={year}
             style={{ width: 120 }}
@@ -102,6 +103,7 @@ function SelectDate() {
                 label: yearValueToLabel(option),
             }))}
         />
+        <label style={{ marginLeft: 10, marginRight: 10 }} >Mês</label>
         <Select
             value={month}
             style={{ width: 120 }}

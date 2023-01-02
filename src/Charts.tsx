@@ -2,14 +2,14 @@ import React from 'react';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend, ChartData } from 'chart.js';
 import { Pie } from 'react-chartjs-2';
 import SelectDate from './SelectDate';
-import { selectEntries, BudgetEntry, filterEntries } from './slices/budgetEntriesSlice';
+import { selectExpenseEntries, ExpenseEntry, filterExpenseEntries } from './slices/expenseEntriesSlice';
 import { colorToString, randomColor } from './helpers';
 import { useAppSelector } from './Hooks';
 import { selectYear, selectMonth } from './slices/selectDateSlice';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
-function makeLabels(data: BudgetEntry[]) {
+function makeLabels(data: ExpenseEntry[]) {
     const labels: string[] = [];
     data.forEach(entry => {
         if (undefined === labels.find(label => label === entry.category)) {
@@ -19,7 +19,7 @@ function makeLabels(data: BudgetEntry[]) {
     return labels;
 }
 
-function makeData(rawData: BudgetEntry[], labels: string[]): number[] {
+function makeData(rawData: ExpenseEntry[], labels: string[]): number[] {
     const data: Record<string, number> = {};
     labels.forEach(label => {
         data[label] = 0;
@@ -49,7 +49,7 @@ function makeColors(howMany: number): { backgroundColor: string[], borderColor: 
     return result;
 }
 
-function makeChart(data: BudgetEntry[]): ChartData<"pie", number[], string> {
+function makeChart(data: ExpenseEntry[]): ChartData<"pie", number[], string> {
     const labels = makeLabels(data);
     return {
       labels: labels,
@@ -67,8 +67,8 @@ function makeChart(data: BudgetEntry[]): ChartData<"pie", number[], string> {
 function Charts() {
     const year = useAppSelector(selectYear);
     const month = useAppSelector(selectMonth);
-    const entries = useAppSelector(selectEntries);
-    let filteredEntries = filterEntries(entries, year, month);
+    const entries = useAppSelector(selectExpenseEntries);
+    let filteredEntries = filterExpenseEntries(entries, year, month);
     return <div style={{width:400, height: 400}}>
         <SelectDate/>
         <Pie data={makeChart(filteredEntries)} />

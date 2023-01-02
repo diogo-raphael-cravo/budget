@@ -4,9 +4,9 @@ import type { ColumnsType } from 'antd/es/table';
 import SelectDate, { monthValueToLabel } from './SelectDate';
 import { useAppSelector } from './Hooks';
 import { selectYear, selectMonth } from './slices/selectDateSlice';
-import { selectEntries, BudgetEntry, filterEntries } from './slices/budgetEntriesSlice';
+import { selectExpenseEntries, ExpenseEntry, filterExpenseEntries } from './slices/expenseEntriesSlice';
 
-function getAccounts(data: BudgetEntry[]): string[] {
+function getAccounts(data: ExpenseEntry[]): string[] {
     const accounts: string[] = [];
     data.forEach(entry => {
         if (undefined === accounts.find(account => account === entry.account)) {
@@ -16,7 +16,7 @@ function getAccounts(data: BudgetEntry[]): string[] {
     return accounts;
 }
 
-function getCategories(data: BudgetEntry[]): string[] {
+function getCategories(data: ExpenseEntry[]): string[] {
     const categories: string[] = [];
     data.forEach(entry => {
         if (undefined === categories.find(category => category === entry.category)) {
@@ -33,7 +33,7 @@ function toFilters(filters: string[]): { text: string, value: string }[] {
     }));
 }
 
-function makeColumns(data: BudgetEntry[]): ColumnsType<BudgetEntry> {
+function makeColumns(data: ExpenseEntry[]): ColumnsType<ExpenseEntry> {
     return [{
         title: 'Dia',
         dataIndex: 'day',
@@ -74,8 +74,8 @@ function makeColumns(data: BudgetEntry[]): ColumnsType<BudgetEntry> {
 function Table() {
     const year = useAppSelector(selectYear);
     const month = useAppSelector(selectMonth);
-    const entries = useAppSelector(selectEntries);
-    let filteredEntries = filterEntries(entries, year, month);
+    const entries = useAppSelector(selectExpenseEntries);
+    let filteredEntries = filterExpenseEntries(entries, year, month);
     return <div>
         <SelectDate/>
         <AntTable columns={makeColumns(filteredEntries)} dataSource={filteredEntries}/>
