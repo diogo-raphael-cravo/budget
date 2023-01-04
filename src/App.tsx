@@ -10,6 +10,7 @@ import { Layout, Menu, theme } from 'antd';
 import Charts from './Charts';
 import ExpenseTable from './ExpenseTable';
 import BalanceTable from './BalanceTable';
+import IncomeTable from './IncomeTable';
 import Statistics from './Statistics';
 
 const { Header, Content, Footer, Sider } = Layout;
@@ -34,13 +35,14 @@ const items: MenuItem[] = [
   getItem('Gráficos', 'graphs', <PieChartOutlined />),
   getItem('Tabela de despesas', 'expense-table', <FileOutlined />),
   getItem('Tabela de balanço', 'balance-table', <FileOutlined />),
+  getItem('Tabela de entradas', 'income-table', <FileOutlined />),
   getItem('Estatísticas', 'stats', <PlusOutlined />),
 ];
 
 
 function App() {
   const [collapsed, setCollapsed] = useState(false);
-  const [selectedKeys, setSelectedKeys] = useState(['expense-table']);
+  const [selectedKeys, setSelectedKeys] = useState(['income-table']);
   const {
     token: { colorBgContainer },
   } = theme.useToken();
@@ -56,6 +58,8 @@ function App() {
     case 'expense-table' : selectedPage = <ExpenseTable/>;
       break;
     case 'balance-table' : selectedPage = <BalanceTable/>;
+      break;
+    case 'income-table' : selectedPage = <IncomeTable/>;
       break;
     case 'stats': selectedPage = <Statistics/>;
       break;

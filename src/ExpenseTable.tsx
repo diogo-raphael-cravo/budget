@@ -97,7 +97,6 @@ function Table() {
         ...entry,
         id: `${entry.day}-${entry.month}-${entry.year}-${entry.value}-${entry.category}-${entry.account}-${entry.description}`,
     }));
-    const sum = tableEntries.reduce((prev, curr) => prev + curr.value, 0);
     return <div>
         <SelectDate/>
         <AntTable rowKey={'id'} columns={makeColumns(filteredEntries)} dataSource={tableEntries} style={{ marginTop: 30 }}/>
