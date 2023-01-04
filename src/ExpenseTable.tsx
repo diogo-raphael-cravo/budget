@@ -13,6 +13,7 @@ function getAccounts(data: ExpenseEntry[]): string[] {
             accounts.push(entry.account);
         }
     });
+    accounts.sort();
     return accounts;
 }
 
@@ -23,7 +24,19 @@ function getCategories(data: ExpenseEntry[]): string[] {
             categories.push(entry.category);
         }
     });
+    categories.sort();
     return categories;
+}
+
+function getDescriptions(data: ExpenseEntry[]): string[] {
+    const descriptions: string[] = [];
+    data.forEach(entry => {
+        if (entry.description && undefined === descriptions.find(description => description === entry.description)) {
+            descriptions.push(entry.description);
+        }
+    });
+    descriptions.sort();
+    return descriptions;
 }
 
 function toFilters(filters: string[]): { text: string, value: string }[] {
@@ -59,7 +72,7 @@ function makeColumns(data: ExpenseEntry[]): ColumnsType<TableEntryType> {
         title: 'Conta',
         dataIndex: 'account',
         filters: toFilters(getAccounts(data)),
-        onFilter: (value: string | boolean | number, record) => record.category.indexOf(`${value}`) === 0,
+        onFilter: (value: string | boolean | number, record) => record.account.indexOf(`${value}`) === 0,
     }, {
         title: 'Categoria',
         dataIndex: 'category',
@@ -68,6 +81,8 @@ function makeColumns(data: ExpenseEntry[]): ColumnsType<TableEntryType> {
     }, {
         title: 'Descrição',
         dataIndex: 'description',
+        filters: toFilters(getDescriptions(data)),
+        onFilter: (value: string | boolean | number, record) => record.description?.indexOf(`${value}`) === 0,
     }];
 }
 
@@ -81,10 +96,11 @@ function Table() {
     const tableEntries: TableEntryType[] = filteredEntries.map(entry => ({
         ...entry,
         id: `${entry.day}-${entry.month}-${entry.year}-${entry.value}-${entry.category}-${entry.account}-${entry.description}`,
-    }))
+    }));
+    const sum = tableEntries.reduce((prev, curr) => prev + curr.value, 0);
     return <div>
         <SelectDate/>
-        <AntTable rowKey={'id'} columns={makeColumns(filteredEntries)} dataSource={tableEntries}/>
+        <AntTable rowKey={'id'} columns={makeColumns(filteredEntries)} dataSource={tableEntries} style={{ marginTop: 30 }}/>
     </div>;
 }
 

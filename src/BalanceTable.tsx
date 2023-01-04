@@ -44,6 +44,18 @@ function makeColumns(): ColumnsType<EntryType> {
             }
         },
         sortDirections: ['descend', 'ascend'],
+    }, {
+        title: '%',
+        dataIndex: 'percentage',
+        sorter: (a, b) => a.balance - b.balance,
+        render: text => {
+            if (100 >= parseFloat(text)) {
+                return <div style={{ color: '#3f8600' }}>{text.toFixed(2)} %</div>
+            } else {
+                return <div style={{ color: '#cf1322' }}>{text.toFixed(2)} %</div>
+            }
+        },
+        sortDirections: ['descend', 'ascend'],
     }];
 }
 
@@ -54,6 +66,7 @@ type EntryType = {
     expense: number,
     income: number,
     balance: number,
+    percentage: number,
 };
 
 function Table() {
@@ -91,6 +104,7 @@ function Table() {
             year: expense.year,
             expense: expense.value,
             balance: 0,
+            percentage: 0,
             income: 0,
         };
         const incomeThisMonth = aggregatedIncome.find(income => income.month === expense.month && income.year === expense.year);
@@ -98,11 +112,12 @@ function Table() {
             entry.income = incomeThisMonth.value;
         }
         entry.balance = entry.income - entry.expense;
+        entry.percentage = entry.income ? (100 * entry.expense / entry.income) : 0;
         return entry;
     });
     return <div>
         <SelectDate/>
-        <AntTable rowKey={'id'} columns={makeColumns()} dataSource={entries}/>
+        <AntTable rowKey={'id'} columns={makeColumns()} dataSource={entries} style={{ marginTop: 30 }}/>
     </div>;
 }
 
