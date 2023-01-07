@@ -1,8 +1,10 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import type { RootState } from '../Store';
+import { v4 } from 'uuid';
 import entries from '../data/expenses';
 
 export type ExpenseEntry = {
+  id: string,
   day: number,
   month: number,
   year: number,
@@ -17,7 +19,7 @@ interface BudgetEntriesState {
 };
 
 const initialState: BudgetEntriesState = {
-    entries,
+    entries: entries.map(entry => ({ ...entry, id: v4() })),
 };
 
 export const expenseEntriesSlice = createSlice({

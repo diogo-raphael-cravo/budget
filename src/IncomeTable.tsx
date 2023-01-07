@@ -24,7 +24,7 @@ function toFilters(filters: string[]): { text: string, value: string }[] {
     }));
 }
 
-function makeColumns(data: IncomeEntry[]): ColumnsType<TableEntryType> {
+function makeColumns(data: IncomeEntry[]): ColumnsType<IncomeEntry> {
     return [{
         title: 'Dia',
         dataIndex: 'day',
@@ -54,20 +54,14 @@ function makeColumns(data: IncomeEntry[]): ColumnsType<TableEntryType> {
     }];
 }
 
-type TableEntryType = IncomeEntry & { id: string };
-
 function Table() {
     const year = useAppSelector(selectYear);
     const month = useAppSelector(selectMonth);
     const entries = useAppSelector(selectIncomeEntries);
     let filteredEntries = filterIncomeEntries(entries, year, month);
-    const tableEntries: TableEntryType[] = filteredEntries.map(entry => ({
-        ...entry,
-        id: `${entry.day}-${entry.month}-${entry.year}-${entry.value}-${entry.source}`,
-    }));
     return <div>
         <SelectDate/>
-        <AntTable rowKey={'id'} columns={makeColumns(filteredEntries)} dataSource={tableEntries} style={{ marginTop: 30 }}/>
+        <AntTable rowKey={'id'} columns={makeColumns(filteredEntries)} dataSource={filteredEntries} style={{ marginTop: 30 }}/>
     </div>;
 }
 
