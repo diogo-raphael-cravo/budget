@@ -28,6 +28,7 @@ function Statistics() {
     const handleChangeCategory = (value: string) => {
         setCategory(value);
     };
+    const allCategoriesSelected = categoryOptions[0] === category;
 
     const filteredEntries = timeFilteredExpenseEntries
         .filter(entry => (category === 'Todas' || entry.category === category));
@@ -48,9 +49,9 @@ function Statistics() {
                 />
                 <Row style={{ marginTop: 30 }} >
                     <Statistic title="Gasto total" value={`R$ ${totalExpenses.toLocaleString()}`} style={{ marginRight: 30 }} />
-                    <Statistic title="Entrada total" value={`R$ ${totalIncome.toLocaleString()}`} style={{ marginRight: 30 }} />
-                    {0 >= balance && <Statistic title="Balanço" value={`R$ ${balance.toLocaleString()}`} valueStyle={{ color: '#cf1322' }} prefix={<ArrowDownOutlined />}/>}
-                    {0 < balance && <Statistic title="Balanço" value={`R$ ${balance.toLocaleString()}`} valueStyle={{ color: '#3f8600' }} prefix={<ArrowUpOutlined />}/>}
+                    {allCategoriesSelected && <Statistic title="Entrada total" value={`R$ ${totalIncome.toLocaleString()}`} style={{ marginRight: 30 }} />}{}
+                    {allCategoriesSelected && 0 >= balance && <Statistic title="Balanço" value={`R$ ${balance.toLocaleString()}`} valueStyle={{ color: '#cf1322' }} prefix={<ArrowDownOutlined />}/>}
+                    {allCategoriesSelected && 0 < balance && <Statistic title="Balanço" value={`R$ ${balance.toLocaleString()}`} valueStyle={{ color: '#3f8600' }} prefix={<ArrowUpOutlined />}/>}
                 </Row>
             </Col>
         </Row>
