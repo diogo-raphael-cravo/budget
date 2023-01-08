@@ -30,10 +30,10 @@ function Statistics() {
     };
     const allCategoriesSelected = categoryOptions[0] === category;
 
-    const filteredEntries = timeFilteredExpenseEntries
+    const filteredExpenseEntries = timeFilteredExpenseEntries
         .filter(entry => (category === 'Todas' || entry.category === category));
 
-    const totalExpenses = filteredEntries.reduce((prev, curr) => prev + curr.value, 0)
+    const totalExpenses = filteredExpenseEntries.reduce((prev, curr) => prev + curr.value, 0)
     const totalIncome = timeFilteredIncomeEntries.reduce((prev, curr) => prev + curr.value, 0)
     const balance = totalIncome - totalExpenses;
     return  <div>
@@ -47,11 +47,18 @@ function Statistics() {
                     onChange={handleChangeCategory}
                     options={categoryOptions.map(x => ({ value: x, label: x }))}
                 />
-                <Row style={{ marginTop: 30 }} >
-                    <Statistic title="Gasto total" value={`R$ ${totalExpenses.toLocaleString()}`} style={{ marginRight: 30 }} />
-                    {allCategoriesSelected && <Statistic title="Entrada total" value={`R$ ${totalIncome.toLocaleString()}`} style={{ marginRight: 30 }} />}{}
+                <h3 style={{ marginTop: 30 }}>Valores</h3>
+                <Row>
+                    <Statistic title="Despesas" value={`R$ ${totalExpenses.toLocaleString()}`} style={{ marginRight: 30 }} />
+                    {allCategoriesSelected && <Statistic title="Entradas" value={`R$ ${totalIncome.toLocaleString()}`} style={{ marginRight: 30 }} />}{}
                     {allCategoriesSelected && 0 >= balance && <Statistic title="Balanço" value={`R$ ${balance.toLocaleString()}`} valueStyle={{ color: '#cf1322' }} prefix={<ArrowDownOutlined />}/>}
                     {allCategoriesSelected && 0 < balance && <Statistic title="Balanço" value={`R$ ${balance.toLocaleString()}`} valueStyle={{ color: '#3f8600' }} prefix={<ArrowUpOutlined />}/>}
+                </Row>
+                <h3 style={{ marginTop: 30 }}>Registros</h3>
+                <Row>
+                    <Statistic title="Despesas" value={filteredExpenseEntries.length} style={{ marginRight: 30 }} />
+                    <Statistic title="Entradas" value={timeFilteredIncomeEntries.length} style={{ marginRight: 30 }} />
+                    <Statistic title="Total" value={filteredExpenseEntries.length + timeFilteredIncomeEntries.length} style={{ marginRight: 30 }} />
                 </Row>
             </Col>
         </Row>
