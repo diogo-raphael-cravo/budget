@@ -72,17 +72,17 @@ function makeColumns(data: ExpenseEntry[]): ColumnsType<ExpenseEntry> {
         title: 'Conta',
         dataIndex: 'account',
         filters: toFilters(getAccounts(data)),
-        onFilter: (value: string | boolean | number, record) => record.account.indexOf(`${value}`) === 0,
+        onFilter: (value: string | boolean | number, record) => record.account === value,
     }, {
         title: 'Categoria',
         dataIndex: 'category',
         filters: toFilters(getCategories(data)),
-        onFilter: (value: string | boolean | number, record) => record.category.indexOf(`${value}`) === 0,
+        onFilter: (value: string | boolean | number, record) => record.category === value,
     }, {
         title: 'Subcategoria',
         dataIndex: 'subcategory',
         filters: toFilters(getSubcategories(data)),
-        onFilter: (value: string | boolean | number, record) => record.subcategory?.indexOf(`${value}`) === 0,
+        onFilter: (value: string | boolean | number, record) => record.subcategory === value,
     }, {
         title: 'Descrição',
         dataIndex: 'description',

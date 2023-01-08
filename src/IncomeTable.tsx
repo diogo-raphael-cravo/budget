@@ -50,7 +50,7 @@ function makeColumns(data: IncomeEntry[]): ColumnsType<IncomeEntry> {
         title: 'Origem',
         dataIndex: 'source',
         filters: toFilters(getSources(data)),
-        onFilter: (value: string | boolean | number, record) => record.source.indexOf(`${value}`) === 0,
+        onFilter: (value: string | boolean | number, record) => record.source === value,
     }];
 }
 
