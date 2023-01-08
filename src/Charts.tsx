@@ -64,14 +64,14 @@ function makeMainChart(data: ExpenseEntry[], labels: string[]): ChartData<"pie",
     };
 }
 
-function makeDataByDescription(rawData: ExpenseEntry[], labels: string[]): number[] {
+function makeDataBySubcategory(rawData: ExpenseEntry[], labels: string[]): number[] {
     const data: Record<string, number> = {};
     labels.forEach(label => {
         data[label] = 0;
     });
     rawData.forEach(entry => {
-        if (entry.description) {
-            data[entry.description] += entry.value;
+        if (entry.subcategory) {
+            data[entry.subcategory] += entry.value;
         } else {
             data['sem descrição'] += entry.value;
         }
@@ -87,8 +87,8 @@ function makeSubChart(data: ExpenseEntry[], category: string): ChartData<"pie", 
     const labels: string[] = ['sem descrição'];
     const dataThisCategory = data.filter(entry => entry.category === category);
     dataThisCategory.forEach(entry => {
-        if (entry.description && undefined === labels.find(label => label === entry.description)) {
-            labels.push(entry.description);
+        if (entry.subcategory && undefined === labels.find(label => label === entry.subcategory)) {
+            labels.push(entry.subcategory);
         }
     });
     return {
@@ -96,7 +96,7 @@ function makeSubChart(data: ExpenseEntry[], category: string): ChartData<"pie", 
       datasets: [
         {
           label: 'R$ ',
-          data: makeDataByDescription(dataThisCategory, labels),
+          data: makeDataBySubcategory(dataThisCategory, labels),
           ...makeColors(labels.length),
           borderWidth: 1,
         },

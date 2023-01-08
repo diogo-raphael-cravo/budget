@@ -28,15 +28,15 @@ function getCategories(data: ExpenseEntry[]): string[] {
     return categories;
 }
 
-function getDescriptions(data: ExpenseEntry[]): string[] {
-    const descriptions: string[] = [];
+function getSubcategories(data: ExpenseEntry[]): string[] {
+    const subcategories: string[] = [];
     data.forEach(entry => {
-        if (entry.description && undefined === descriptions.find(description => description === entry.description)) {
-            descriptions.push(entry.description);
+        if (entry.subcategory && undefined === subcategories.find(subcategory => subcategory === entry.subcategory)) {
+            subcategories.push(entry.subcategory);
         }
     });
-    descriptions.sort();
-    return descriptions;
+    subcategories.sort();
+    return subcategories;
 }
 
 function toFilters(filters: string[]): { text: string, value: string }[] {
@@ -79,10 +79,13 @@ function makeColumns(data: ExpenseEntry[]): ColumnsType<ExpenseEntry> {
         filters: toFilters(getCategories(data)),
         onFilter: (value: string | boolean | number, record) => record.category.indexOf(`${value}`) === 0,
     }, {
+        title: 'Subcategoria',
+        dataIndex: 'subcategory',
+        filters: toFilters(getSubcategories(data)),
+        onFilter: (value: string | boolean | number, record) => record.subcategory?.indexOf(`${value}`) === 0,
+    }, {
         title: 'Descrição',
         dataIndex: 'description',
-        filters: toFilters(getDescriptions(data)),
-        onFilter: (value: string | boolean | number, record) => record.description?.indexOf(`${value}`) === 0,
     }];
 }
 
