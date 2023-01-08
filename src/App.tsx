@@ -34,8 +34,8 @@ function getItem(
 const items: MenuItem[] = [
   getItem('Gráficos', 'graphs', <PieChartOutlined />),
   getItem('Tabela de despesas', 'expense-table', <FileOutlined />),
-  getItem('Tabela de balanço', 'balance-table', <FileOutlined />),
   getItem('Tabela de entradas', 'income-table', <FileOutlined />),
+  getItem('Balanço', 'balance-table', <FileOutlined />),
   getItem('Estatísticas', 'stats', <PlusOutlined />),
 ];
 

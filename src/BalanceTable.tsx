@@ -7,6 +7,28 @@ import { useAppSelector } from './Hooks';
 import { selectYear, selectMonth } from './slices/selectDateSlice';
 import { selectExpenseEntries, ExpenseEntry, filterExpenseEntries } from './slices/expenseEntriesSlice';
 import { selectIncomeEntries, IncomeEntry, filterIncomeEntries } from './slices/incomeEntriesSlice';
+import {
+    Chart as ChartJS,
+    CategoryScale,
+    LinearScale,
+    PointElement,
+    LineElement,
+    Title,
+    Tooltip,
+    Legend,
+    ChartData,
+  } from 'chart.js';
+  import { Line } from 'react-chartjs-2';
+
+ChartJS.register(
+    CategoryScale,
+    LinearScale,
+    PointElement,
+    LineElement,
+    Title,
+    Tooltip,
+    Legend
+);
 
 function makeColumns(): ColumnsType<EntryType> {
     return [{
@@ -57,6 +79,33 @@ function makeColumns(): ColumnsType<EntryType> {
         },
         sortDirections: ['descend', 'ascend'],
     }];
+}
+
+function makeLineData(entries: EntryType[]): ChartData<"line", number[], string> {
+    return {
+        labels: entries.map(entry => `${entry.month}/${entry.year}`),
+        datasets: [{
+            label: 'Entrada',
+            data: entries.map(entry => entry.income),
+            borderColor: 'rgb(99, 255, 132)',
+            backgroundColor: 'rgba(204, 255, 153, 0.5)',
+        }, {
+            label: 'Saída',
+            data: entries.map(entry => entry.expense),
+            borderColor: 'rgb(255, 99, 132)',
+            backgroundColor: 'rgba(255, 102, 102, 0.5)',
+        }, {
+            label: 'Balanço',
+            data: entries.map(entry => entry.balance),
+            borderColor: 'rgba(102, 153, 153, 1)',
+            backgroundColor: 'rgba(102, 153, 153, 0.5)',
+        }, {
+            label: 'Balanço acumulado',
+            data: entries.map((_, index) => entries.slice(0, index + 1).reduce((prev, curr) => prev + curr.balance, 0)),
+            borderColor: 'rgb(50, 50, 50)',
+            backgroundColor: 'rgba(100, 100, 100, 0.5)',
+        }],
+    }
 }
 
 type EntryType = {
@@ -115,9 +164,23 @@ function Table() {
         entry.percentage = entry.income ? (100 * entry.expense / entry.income) : 0;
         return entry;
     });
+
+    const options = {
+        responsive: true,
+        plugins: {
+          legend: {
+            position: 'top' as const,
+          },
+          title: {
+            display: true,
+            text: 'Balanço',
+          },
+        },
+    };
     return <div>
         <SelectDate/>
-        <AntTable rowKey={'id'} columns={makeColumns()} dataSource={entries} style={{ marginTop: 30 }}/>
+        <Line options={options} data={makeLineData(entries)} />
+        <AntTable rowKey={'id'} columns={makeColumns()} dataSource={entries} style={{ marginTop: 50 }}/>
     </div>;
 }
 
