@@ -3,7 +3,7 @@ import { Select } from 'antd';
 import { ArrowDownOutlined, ArrowUpOutlined } from '@ant-design/icons';
 import { useAppSelector } from './Hooks';
 import { selectExpenseEntries, filterExpenseEntries } from './slices/expenseEntriesSlice';
-import { selectIncomeEntries, filterIncomeEntries } from './slices/incomeEntriesSlice';
+import { selectIncomeEntries, filterIncomeEntries, getMonths, getMeanIncomeEntries } from './slices/incomeEntriesSlice';
 import { Col, Row, Statistic } from 'antd';
 import SelectDate from './SelectDate';
 import { selectYear, selectMonth } from './slices/selectDateSlice';
@@ -36,6 +36,9 @@ function Statistics() {
     const totalExpenses = filteredExpenseEntries.reduce((prev, curr) => prev + curr.value, 0)
     const totalIncome = timeFilteredIncomeEntries.reduce((prev, curr) => prev + curr.value, 0)
     const balance = totalIncome - totalExpenses;
+
+    const monthsFilteredIncomeEntries = getMonths(timeFilteredIncomeEntries);
+    const meanIncome = getMeanIncomeEntries(timeFilteredIncomeEntries, monthsFilteredIncomeEntries);
     return  <div>
         <Row gutter={16}>
             <Col span={12}>
@@ -54,11 +57,15 @@ function Statistics() {
                     {allCategoriesSelected && 0 >= balance && <Statistic title="Balanço" value={`R$ ${balance.toLocaleString()}`} valueStyle={{ color: '#cf1322' }} prefix={<ArrowDownOutlined />}/>}
                     {allCategoriesSelected && 0 < balance && <Statistic title="Balanço" value={`R$ ${balance.toLocaleString()}`} valueStyle={{ color: '#3f8600' }} prefix={<ArrowUpOutlined />}/>}
                 </Row>
+                <Row>
+                    {allCategoriesSelected && <Statistic title="Meses" value={monthsFilteredIncomeEntries} style={{ marginRight: 30 }} />}
+                    {allCategoriesSelected && <Statistic title="Média" value={`R$ ${meanIncome.toLocaleString()}`} style={{ marginRight: 30 }} />}
+                </Row>
                 <h3 style={{ marginTop: 30 }}>Registros</h3>
                 <Row>
                     <Statistic title="Despesas" value={filteredExpenseEntries.length} style={{ marginRight: 30 }} />
-                    <Statistic title="Entradas" value={timeFilteredIncomeEntries.length} style={{ marginRight: 30 }} />
-                    <Statistic title="Total" value={filteredExpenseEntries.length + timeFilteredIncomeEntries.length} style={{ marginRight: 30 }} />
+                    {allCategoriesSelected && <Statistic title="Entradas" value={timeFilteredIncomeEntries.length} style={{ marginRight: 30 }} />}
+                    {allCategoriesSelected && <Statistic title="Total" value={filteredExpenseEntries.length + timeFilteredIncomeEntries.length} style={{ marginRight: 30 }} />}
                 </Row>
             </Col>
         </Row>
