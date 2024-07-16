@@ -1,3 +1,4 @@
+import './Charts.css'
 import { useRef, useState } from 'react';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend, ChartData } from 'chart.js';
 import { Pie, getDatasetAtEvent, getElementAtEvent } from 'react-chartjs-2';
@@ -112,17 +113,22 @@ function Charts() {
     const entries = useAppSelector(selectExpenseEntries);
     let filteredEntries = filterExpenseEntries(entries, year, month);
     const labels = makeLabelsByCategory(filteredEntries);
-    return <div style={{width:400, height: 400}}>
-        <SelectDate/>
-        <Pie ref={pieRef} data={makeMainChart(filteredEntries, labels)} onClick={(event) => {
-            // TODO: fix types
-            // @ts-ignore
-            const index = getElementAtEvent(pieRef.current, event)[0].index;
-            setCurrentLabel(labels[index]);
-        }}/>
-        {
+    {filteredEntries.reduce((prev, x) => prev + x.value, 0)}
+    return <div className='charts-grid'>
+        <div style={{ gridColumn: '1 / 3' }}>
+            <SelectDate/>
+        </div>
+        <div>
+            <Pie ref={pieRef} data={makeMainChart(filteredEntries, labels)} onClick={(event) => {
+                // TODO: fix types
+                // @ts-ignore
+                const index = getElementAtEvent(pieRef.current, event)[0].index;
+                setCurrentLabel(labels[index]);
+            }}/>
+        </div>
+        {   
             !currentLabel ? <div/> :
-            <Pie data={makeSubChart(filteredEntries, currentLabel)}/>
+            <div><Pie data={makeSubChart(filteredEntries, currentLabel)}/></div>
         }
     </div>;
 }
