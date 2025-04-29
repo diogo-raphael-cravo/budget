@@ -12,6 +12,7 @@ import ExpenseTable from './ExpenseTable';
 import BalanceTable from './BalanceTable';
 import IncomeTable from './IncomeTable';
 import Statistics from './Statistics';
+import DataImport from './DataImport';
 
 const { Header, Content, Footer, Sider } = Layout;
 
@@ -37,6 +38,7 @@ const items: MenuItem[] = [
   getItem('Tabela de entradas', 'income-table', <FileOutlined />),
   getItem('Balanço', 'balance-table', <FileOutlined />),
   getItem('Estatísticas', 'stats', <PlusOutlined />),
+  getItem('Import', 'import', <PlusOutlined />),
 ];
 
 
@@ -62,6 +64,8 @@ function App() {
     case 'income-table' : selectedPage = <IncomeTable/>;
       break;
     case 'stats': selectedPage = <Statistics/>;
+      break;
+    case 'import': selectedPage = <DataImport/>;
       break;
   }
 
