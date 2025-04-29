@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import type { RootState } from '../Store';
 import { v4 } from 'uuid';
-import entries from '../data/expenses';
+import entries from '../fake-data/expenses';
 
 export type ExpenseEntry = {
   id: string,

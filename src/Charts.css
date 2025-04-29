@@ -1,0 +1,4 @@
+.charts-grid {
+    display: grid;
+    grid-template-columns: 700px 700px;
+}

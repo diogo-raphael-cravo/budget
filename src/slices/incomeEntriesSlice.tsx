@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 import type { RootState } from '../Store';
-import entries from '../data/income';
+import entries from '../fake-data/income';
 import { v4 } from 'uuid';
 
 export type IncomeEntry = {
