@@ -13,6 +13,7 @@ import BalanceTable from './BalanceTable';
 import IncomeTable from './IncomeTable';
 import Statistics from './Statistics';
 import DataImport from './DataImport';
+import Goals from './Goals';
 
 const { Header, Content, Footer, Sider } = Layout;
 
@@ -39,6 +40,7 @@ const items: MenuItem[] = [
   getItem('Balanço', 'balance-table', <FileOutlined />),
   getItem('Estatísticas', 'stats', <PlusOutlined />),
   getItem('Import', 'import', <PlusOutlined />),
+  getItem('Goals', 'goals', <PlusOutlined />),
 ];
 
 
@@ -66,6 +68,8 @@ function App() {
     case 'stats': selectedPage = <Statistics/>;
       break;
     case 'import': selectedPage = <DataImport/>;
+      break;
+    case 'goals': selectedPage = <Goals/>;
       break;
   }
 
