@@ -19,6 +19,7 @@ const expenses: {
     account: string,
     category: string,
     subcategory: string,
+    fixed: boolean,
     description?: string,
 }[] = [];
 const categories = ['Rent', 'Education', 'Meals', 'Supermarket', 'Entertainment', 'Insurance', 'Maintenance', 'Tax', 'Transportation'];
@@ -49,6 +50,7 @@ for (let year = 2015; year < 2025; year++) {
                 category: categories[Math.floor(Math.random() * categories.length)],
                 year,
                 description: '',
+                fixed: false,
                 subcategory: subCategories[Math.floor(Math.random() * subCategories.length)],
             });
         }

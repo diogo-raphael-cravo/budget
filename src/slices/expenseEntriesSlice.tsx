@@ -12,6 +12,7 @@ export type ExpenseEntry = {
   account: string,
   category: string,
   subcategory: string,
+  fixed: boolean,
   description?: string,
 };
 

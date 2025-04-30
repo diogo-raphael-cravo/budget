@@ -14,6 +14,7 @@ import IncomeTable from './IncomeTable';
 import Statistics from './Statistics';
 import DataImport from './DataImport';
 import Goals from './Goals';
+import FixedExpenses from './FixedExpenses';
 
 const { Header, Content, Footer, Sider } = Layout;
 
@@ -41,6 +42,7 @@ const items: MenuItem[] = [
   getItem('Estatísticas', 'stats', <PlusOutlined />),
   getItem('Import', 'import', <PlusOutlined />),
   getItem('Goals', 'goals', <PlusOutlined />),
+  getItem('Gastos fixos e variáveis', 'fixed-expenses', <PlusOutlined />),
 ];
 
 
@@ -70,6 +72,8 @@ function App() {
     case 'import': selectedPage = <DataImport/>;
       break;
     case 'goals': selectedPage = <Goals/>;
+      break;
+    case 'fixed-expenses': selectedPage = <FixedExpenses/>
       break;
   }
 

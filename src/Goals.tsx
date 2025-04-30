@@ -61,18 +61,44 @@ type GoalCriteriaType =
     // if provided, include all but the ones excluded
     | GoalCriteriaExcludeType;
 
-type GoalType = {
+type FixedGoalType = {
     categories: GoalCriteriaType,
     subcategories: GoalCriteriaType,
     goal: number
+};
+type VariableGoalType = {
+    categories: GoalCriteriaType,
+    subcategories: GoalCriteriaType,
+    percent: number
+};
+
+type Budget = {
+    budget: number,
+    fixedGoals: FixedGoalType[],
+    variableGoals: VariableGoalType[]
+}
+
+type RowType = {
+    categories: string[],
+    subcategories: string[],
+    goal: number,
+    actual: number,
 };
 
 function capitalize(word: string) {
     return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
 }
 
+function round(n: number) {
+    return Math.round(n * 100) / 100;
+}
+
 function Goals() {
-    const [goals, setGoals] = useState<GoalType[]>([]);
+    const [budget, setBudget] = useState<Budget>({
+        budget: 0,
+        fixedGoals: [],
+        variableGoals: [],
+    });
     const year = useAppSelector(selectYear);
     const month = useAppSelector(selectMonth);
     const expenseEntries = useAppSelector(selectExpenseEntries);
@@ -81,20 +107,18 @@ function Goals() {
     const timeFilteredExpenseEntries = filterExpenseEntries(expenseEntries, year, month);
     const timeFilteredIncomeEntries = filterIncomeEntries(incomeEntries, year, month);
 
-    const rows: {
-        categories: string[],
-        subcategories: string[],
-        goal: number,
-        actual: number,
-    }[] = [];
+    const fixedRows: RowType[] = [];
+    const variableRows: (RowType & { percent: number })[] = [];
 
-    goals.forEach(g => {
+    budget.fixedGoals.forEach(g => {
+        const expenses = timeFilteredExpenseEntries.filter(e => e.fixed);
+
         const categories: string[] = [];
         if (g.categories.include) {
             categories.push(...g.categories.include);
         } else if (g.categories.exclude) {
             const s = new Set<string>();
-            timeFilteredExpenseEntries.forEach(e => {
+            expenses.forEach(e => {
                 if (!g.categories.exclude?.find(excluded => e.category === excluded)) {
                     s.add(e.category);
                 }
@@ -107,7 +131,7 @@ function Goals() {
             subcategories.push(...g.subcategories.include);
         } else if (g.subcategories.exclude) {
             const s = new Set<string>();
-            timeFilteredExpenseEntries.forEach(e => {
+            expenses.forEach(e => {
                 if (categories.find(category => e.category === category)
                     && !g.subcategories.exclude?.find(excluded => e.subcategory === excluded)) {
                     s.add(e.subcategory);
@@ -116,7 +140,7 @@ function Goals() {
             subcategories.push(...Array.from(s));
         }
 
-        const actual: number = timeFilteredExpenseEntries.reduce((prev, curr) => {
+        const actual: number = expenses.reduce((prev, curr) => {
             if (!categories.find(category => category === curr.category)) {
                 return prev;
             }
@@ -126,24 +150,83 @@ function Goals() {
             return prev + curr.value;
         }, 0);
 
-        rows.push({
+        fixedRows.push({
             categories,
             subcategories,
             goal: g.goal,
-            actual: Math.round(actual * 100) / 100,
+            actual: round(actual),
         });
     });
 
-    const totalGoals = goals.reduce((prev, curr) => prev + curr.goal, 0);
-    let totalExpenses = timeFilteredExpenseEntries.reduce((prev, curr) => prev + curr.value, 0);
-    totalExpenses = Math.round(totalExpenses * 100) / 100;
-    let totalExpensesWithGoals = totalExpenses - rows.reduce((prev, curr) => prev + curr.actual, 0);
-    totalExpensesWithGoals = Math.round(totalExpensesWithGoals * 100) / 100;
+    const totalFixedGoals = round(budget.fixedGoals.reduce((prev, curr) => prev + curr.goal, 0));
+    const totalFixedGoalsActual = fixedRows.reduce((prev, curr) => prev + curr.actual, 0);
+    const totalFixedExpenses = round(timeFilteredExpenseEntries.filter(e => e.fixed).reduce((prev, curr) => prev + curr.value, 0));
+    const fixedExpensesNotListed = round(totalFixedExpenses - totalFixedGoalsActual);
+    const budgetAfterFixedExpenses = round(budget.budget - totalFixedExpenses);
+
+    budget.variableGoals.forEach(g => {
+        const expenses = timeFilteredExpenseEntries.filter(e => !e.fixed);
+
+        const categories: string[] = [];
+        if (g.categories.include) {
+            categories.push(...g.categories.include);
+        } else if (g.categories.exclude) {
+            const s = new Set<string>();
+            expenses.forEach(e => {
+                if (!g.categories.exclude?.find(excluded => e.category === excluded)) {
+                    s.add(e.category);
+                }
+            });
+            categories.push(...Array.from(s));
+        }
+
+        const subcategories: string[] = [];
+        if (g.subcategories.include) {
+            subcategories.push(...g.subcategories.include);
+        } else if (g.subcategories.exclude) {
+            const s = new Set<string>();
+            expenses.forEach(e => {
+                if (categories.find(category => e.category === category)
+                    && !g.subcategories.exclude?.find(excluded => e.subcategory === excluded)) {
+                    s.add(e.subcategory);
+                }
+            });
+            subcategories.push(...Array.from(s));
+        }
+
+        const actual: number = expenses.reduce((prev, curr) => {
+            if (!categories.find(category => category === curr.category)) {
+                return prev;
+            }
+            if (!subcategories.find(subcategory => subcategory === curr.subcategory)
+                && '' !== curr.subcategory) {
+                return prev;
+            }
+            return prev + curr.value;
+        }, 0);
+
+        variableRows.push({
+            categories,
+            subcategories,
+            percent: g.percent,
+            goal: round((g.percent / 100) * budgetAfterFixedExpenses),
+            actual: round(actual),
+        });
+    });
+
+    const totalVariableGoals = round(variableRows.reduce((prev, curr) => prev + curr.goal, 0));
+    const totalVariableGoalsActual = round(variableRows.reduce((prev, curr) => prev + curr.actual, 0));
+    const totalVariableExpenses = round(timeFilteredExpenseEntries.filter(e => !e.fixed).reduce((prev, curr) => prev + curr.value, 0));
+    const variableExpensesNotListed = round(totalVariableExpenses - totalVariableGoalsActual);
+
+    const totalIncome = round(timeFilteredIncomeEntries.reduce((prev, curr) => prev + curr.value, 0));
 
     return <div>
         <SelectDate/>
-        <DragAndDropFile onDroppedFile={(contents) => setGoals(JSON.parse(contents) as unknown as GoalType[])}/>
-        Entrada: {timeFilteredIncomeEntries.reduce((prev, curr) => prev + curr.value, 0)}
+        <DragAndDropFile onDroppedFile={(contents) => setBudget(JSON.parse(contents) as unknown as Budget)}/>
+        Entrada: {totalIncome}<br/>
+        Orçamento: {budget.budget}<br/><br/>
+        Metas Fixas
         <Table>
             <Thead>
                 <tr>
@@ -154,7 +237,7 @@ function Goals() {
                 </tr>
             </Thead>
             <tbody>
-                {rows.map((row, index) => (
+                {fixedRows.map((row, index) => (
                     <Tr key={JSON.stringify([...row.categories, ...row.subcategories])} isEven={index % 2 === 0}>
                         <Td>{row.categories.map(capitalize).join(', ')}</Td>
                         <Td>{JSON.stringify(row.subcategories.map(capitalize))}</Td>
@@ -166,13 +249,75 @@ function Goals() {
                     <Td>Não listadas</Td>
                     <Td></Td>
                     <Td>{0}</Td>
-                    <PaintedTd isGood={0 === totalExpensesWithGoals}>{totalExpensesWithGoals}</PaintedTd>
+                    <PaintedTd isGood={0 === fixedExpensesNotListed}>{fixedExpensesNotListed}</PaintedTd>
                 </FinalTr>
                 <FinalTr key={'Todas'}>
                     <Td>Todas</Td>
                     <Td>Todas</Td>
-                    <Td>{totalGoals}</Td>
-                    <PaintedTd isGood={totalExpenses < totalGoals}>{totalExpenses}</PaintedTd>
+                    <Td>{totalFixedGoals}</Td>
+                    <PaintedTd isGood={totalFixedExpenses < totalFixedGoals}>{totalFixedExpenses}</PaintedTd>
+                </FinalTr>
+            </tbody>
+        </Table>
+
+        Resumo Metas Fixas
+        <Table>
+            <Thead style={{ display: 'none' }}>
+                <tr>
+                    <Th>will not show</Th>
+                    <Th>will not show</Th>
+                </tr>
+            </Thead>
+            <tbody>
+                <FinalTr key={'Outros'}>
+                    <Td>Orçamento</Td>
+                    <Td>{budget.budget}</Td>
+                </FinalTr>
+                <FinalTr key={'Todas'}>
+                    <Td>Gastos fixos</Td>
+                    <Td>{totalFixedExpenses}</Td>
+                </FinalTr>
+                <FinalTr key={'Todas'}>
+                    <Td>Saldo remanescente</Td>
+                    <Td>{budgetAfterFixedExpenses}</Td>
+                </FinalTr>
+            </tbody>
+        </Table>
+
+        Metas Variáveis
+        <Table>
+            <Thead>
+                <tr>
+                    <Th>Categoria</Th>
+                    <Th>Subcategorias</Th>
+                    <Th>Meta (%)</Th>
+                    <Th>Meta</Th>
+                    <Th>Realizado</Th>
+                </tr>
+            </Thead>
+            <tbody>
+                {variableRows.map((row, index) => (
+                    <Tr key={JSON.stringify([...row.categories, ...row.subcategories])} isEven={index % 2 === 0}>
+                        <Td>{row.categories.map(capitalize).join(', ')}</Td>
+                        <Td>{JSON.stringify(row.subcategories.map(capitalize))}</Td>
+                        <Td>{row.percent}</Td>
+                        <Td>{row.goal}</Td>
+                        <PaintedTd isGood={row.actual <= row.goal}>{row.actual}</PaintedTd>
+                    </Tr>
+                ))}
+                <FinalTr key={'Outros'}>
+                    <Td>Não listadas</Td>
+                    <Td></Td>
+                    <Td></Td>
+                    <Td>{0}</Td>
+                    <PaintedTd isGood={0 === variableExpensesNotListed}>{variableExpensesNotListed}</PaintedTd>
+                </FinalTr>
+                <FinalTr key={'Todas'}>
+                    <Td>Todas</Td>
+                    <Td>Todas</Td>
+                    <Td>{variableRows.reduce((prev, curr) => prev + curr.percent, 0)}</Td>
+                    <Td>{totalVariableGoals}</Td>
+                    <PaintedTd isGood={totalVariableExpenses < totalVariableGoals}>{totalVariableExpenses}</PaintedTd>
                 </FinalTr>
             </tbody>
         </Table>

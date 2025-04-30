@@ -67,19 +67,28 @@ function parseOfxDate(ofxDate: string): Date {
     return baseDate;
 }
 
+type BankTranListType = {
+  DTEND: string,
+  DTSTART: string,
+  STMTTRN: OfxTransationType[],
+}
+
 type OfxType = {
     OFX: {
-        BANKMSGSRSV1: {
-            STMTTRNRS: {
-                STMTRS: {
-                    BANKTRANLIST: {
-                        DTEND: string,
-                        DTSTART: string,
-                        STMTTRN: OfxTransationType[],
-                    }
-                }
-            }
-        },
+      CREDITCARDMSGSRSV1?: {
+        CCSTMTTRNRS: {
+          CCSTMTRS: {
+            BANKTRANLIST: BankTranListType
+          }
+        }
+      },
+      BANKMSGSRSV1?: {
+        STMTTRNRS: {
+          STMTRS: {
+            BANKTRANLIST: BankTranListType
+          }
+        }
+      },
     }
 }
 
@@ -108,7 +117,16 @@ export default (toParse: string): ParsedType => {
     const parser = new XMLParser();
     try {
         const parsed: OfxType = parser.parse(fixOfxToXml(toParse));
-        parsed.OFX.BANKMSGSRSV1.STMTTRNRS.STMTRS.BANKTRANLIST.STMTTRN.forEach(x => {
+        console.log(parsed)
+        let bankTranList: BankTranListType;
+        if (parsed.OFX.BANKMSGSRSV1) {
+          bankTranList = parsed.OFX.BANKMSGSRSV1.STMTTRNRS.STMTRS.BANKTRANLIST;
+        } else if (parsed.OFX.CREDITCARDMSGSRSV1) {
+          bankTranList = parsed.OFX.CREDITCARDMSGSRSV1.CCSTMTTRNRS.CCSTMTRS.BANKTRANLIST
+        } else {
+          throw new Error(`could not parse ${JSON.stringify(parsed, null, 2)}`);
+        }
+        bankTranList.STMTTRN.forEach(x => {
             const date = parseOfxDate(x.DTPOSTED);
             if (TransactionTypesEnum.CREDIT === x.TRNTYPE) {
                 res.incomes.push({
@@ -130,6 +148,7 @@ export default (toParse: string): ParsedType => {
                     subcategory: 'to-evaluate',
                     value: -x.TRNAMT,
                     description: x.MEMO,
+                    fixed: false,
                 })
             } else {
                 throw new Error(`unknown transaction type ${x.TRNTYPE}`);
