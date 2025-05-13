@@ -163,6 +163,7 @@ function Goals() {
     const totalFixedExpenses = round(timeFilteredExpenseEntries.filter(e => e.fixed).reduce((prev, curr) => prev + curr.value, 0));
     const fixedExpensesNotListed = round(totalFixedExpenses - totalFixedGoalsActual);
     const budgetAfterFixedExpenses = round(budget.budget - totalFixedExpenses);
+    const budgetAfterFixedGoals = round(budget.budget - totalFixedGoals);
 
     budget.variableGoals.forEach(g => {
         const expenses = timeFilteredExpenseEntries.filter(e => !e.fixed);
@@ -209,7 +210,7 @@ function Goals() {
             categories,
             subcategories,
             percent: g.percent,
-            goal: round((g.percent / 100) * budgetAfterFixedExpenses),
+            goal: round((g.percent / 100) * budgetAfterFixedGoals),
             actual: round(actual),
         });
     });
@@ -218,6 +219,9 @@ function Goals() {
     const totalVariableGoalsActual = round(variableRows.reduce((prev, curr) => prev + curr.actual, 0));
     const totalVariableExpenses = round(timeFilteredExpenseEntries.filter(e => !e.fixed).reduce((prev, curr) => prev + curr.value, 0));
     const variableExpensesNotListed = round(totalVariableExpenses - totalVariableGoalsActual);
+
+    const finalGoalBalance = round(budgetAfterFixedGoals - totalVariableGoals);
+    const finalBalance = round(budget.budget - totalFixedExpenses - totalVariableExpenses);
 
     const totalIncome = round(timeFilteredIncomeEntries.reduce((prev, curr) => prev + curr.value, 0));
 
@@ -278,8 +282,12 @@ function Goals() {
                     <Td>{totalFixedExpenses}</Td>
                 </FinalTr>
                 <FinalTr key={'Todas'}>
+                    <Td>Meta saldo remanescente</Td>
+                    <Td>{budgetAfterFixedGoals}</Td>
+                </FinalTr>
+                <FinalTr key={'Todas'}>
                     <Td>Saldo remanescente</Td>
-                    <Td>{budgetAfterFixedExpenses}</Td>
+                    <PaintedTd isGood={budgetAfterFixedGoals <= budgetAfterFixedExpenses}>{budgetAfterFixedExpenses}</PaintedTd>
                 </FinalTr>
             </tbody>
         </Table>
@@ -318,6 +326,43 @@ function Goals() {
                     <Td>{variableRows.reduce((prev, curr) => prev + curr.percent, 0)}</Td>
                     <Td>{totalVariableGoals}</Td>
                     <PaintedTd isGood={totalVariableExpenses < totalVariableGoals}>{totalVariableExpenses}</PaintedTd>
+                </FinalTr>
+            </tbody>
+        </Table>
+
+        
+        Resumo Metas Variáveis
+        <Table>
+            <Thead style={{ display: 'none' }}>
+                <tr>
+                    <Th>will not show</Th>
+                    <Th>will not show</Th>
+                </tr>
+            </Thead>
+            <tbody>
+                <FinalTr key={'Outros'}>
+                    <Td>Meta orçamento remanescente</Td>
+                    <Td>{budgetAfterFixedGoals}</Td>
+                </FinalTr>
+                <FinalTr key={'Outros'}>
+                    <Td>Orçamento remanescente</Td>
+                    <Td>{budgetAfterFixedExpenses}</Td>
+                </FinalTr>
+                <FinalTr key={'Todas'}>
+                    <Td>Gastos variáveis</Td>
+                    <Td>{totalVariableExpenses}</Td>
+                </FinalTr>
+                <FinalTr key={'Todas'}>
+                    <Td>Meta gastos variáveis</Td>
+                    <Td>{totalVariableGoals}</Td>
+                </FinalTr>
+                <FinalTr key={'Todas'}>
+                    <Td>Meta saldo remanescente</Td>
+                    <Td>{finalGoalBalance}</Td>
+                </FinalTr>
+                <FinalTr key={'Todas'}>
+                    <Td>Saldo remanescente</Td>
+                    <PaintedTd isGood={finalGoalBalance <= finalBalance}>{finalBalance}</PaintedTd>
                 </FinalTr>
             </tbody>
         </Table>
